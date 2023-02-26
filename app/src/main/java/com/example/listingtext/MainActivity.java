@@ -4,13 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Retrieve the card texts from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        Set<String> set = prefs.getStringSet("cardTexts", new HashSet<>());
+        cardTexts = new ArrayList<>(set);
 
         cardTexts = new ArrayList<>();
         cardList = findViewById(R.id.card_list);
@@ -41,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
                     cardTexts.add(text);
                     cardAdapter.notifyDataSetChanged();
                     editText.getText().clear();
+
+                    // Save the card texts in SharedPreferences
+                    SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    Set<String> set = new HashSet<>(cardTexts);
+                    editor.putStringSet("cardTexts", set);
+                    editor.apply();
                 }
             }
         });
